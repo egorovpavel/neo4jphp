@@ -1,6 +1,7 @@
 <?php
 namespace Everyman\Neo4j\Cypher;
 
+use Symfony\Component\Stopwatch\Stopwatch;
 use Everyman\Neo4j;
 
 /**
