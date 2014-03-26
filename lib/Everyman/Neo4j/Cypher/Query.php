@@ -60,10 +60,28 @@ class Query implements Neo4j\Query
 	 */
 	public function getResultSet()
 	{
-		if ($this->result === null) {
-			$this->result = $this->client->executeCypherQuery($this);
-		}
-
-		return $this->result;
-	}
+	        global $app;
+	
+	        $trace = debug_backtrace();
+	        unset($trace[0]);
+	        $trace = reset($trace);
+	        $origin = str_replace("src\\model\\repos\\neo4j\\","",$trace['class']).$trace['type'].$trace['function'];
+	
+	        $e = $app['stopwatch']->start($origin);
+	        if ($this->result === null) {
+	                $this->result = $this->client->executeCypherQuery($this);
+	        }
+	        $e->stop();
+	        $period = reset($e->getPeriods());
+	
+	        $debug = array(
+	            "time" => $period->getDuration(),
+	            "origin" => $origin
+	        );
+	
+	        $app['monolog']->log(100,json_encode($debug));
+	
+	
+	        return $this->result;
+    	}
 }
